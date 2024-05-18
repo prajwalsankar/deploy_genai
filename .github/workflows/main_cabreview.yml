@@ -66,4 +66,4 @@ jobs:
         with:
           app-name: 'CabReview'
           slot-name: 'Production'
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_E2FB953DFF474229B91ADD40215D7757 }}
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_393B30ACBC9B420D92B669B0CC71C2A8 }}
