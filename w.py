@@ -7,36 +7,39 @@ import streamlit as st
 from tqdm import tqdm
 from langchain_community.document_loaders import TextLoader
 from langchain_text_splitters import CharacterTextSplitter
+from dotenv import load_dotenv
+import os
+
+load_dotenv() 
  
  
 # Define Azure Storage connection details
-connection_string = "DefaultEndpointsProtocol=https;AccountName=ajtsdevsistrg;AccountKey=oaY0INq+3IRBDzuD5tO1Av9YVloi8fs3CHecExkrPZ4r6PRRaThCKL3BZ2vL4V5+w+bqp/Ai8NVT+AStTBOY3g==;EndpointSuffix=core.windows.net"
+
 container_name = "genai"
  
 # Initialize Azure Blob Storage connection
-blob_service_client = BlobServiceClient.from_connection_string(connection_string)
+blob_service_client = BlobServiceClient.from_connection_string(os.environ['connection_string'])
 container_client = blob_service_client.get_container_client(container_name)
 
 # Initialize Azure Search vector store details
-vector_store_address = "https://ai-search-ajuserv.search.windows.net"
-vector_store_password = "9ODMu6tpu6y3B6nYzVd9bTabY8qVLL0FWnWRTxpJwrAzSeCFUbYa"
+
 index_name = "langchain-vector-demo"
  
 # Initialize OpenAI details
-openai_api_key = "sk-proj-6xlSz9blKZhweCZO7ERDT3BlbkFJNW3HopOfPKkmBrhnvWxY"
+
 openai_api_version = "2023-05-15"
 model = "text-embedding-ada-002"
  
 # Initialize LangChain components
 embeddings = OpenAIEmbeddings(
-    openai_api_key=openai_api_key,
+    openai_api_key=os.environ['openai_api_key'],
     openai_api_version=openai_api_version,
     model=model
 )
  
 vector_store = AzureSearch(
-    azure_search_endpoint=vector_store_address,
-    azure_search_key=vector_store_password,
+    azure_search_endpoint=os.environ['vector_store_address'],
+    azure_search_key=os.environ['vector_store_password'],
     index_name=index_name,
     embedding_function=embeddings.embed_query,
 )
@@ -47,7 +50,7 @@ text_splitter = CharacterTextSplitter(chunk_size=256, chunk_overlap=20)
 # vector_store.add_documents(documents=docs)
 
 
-llm_open = OpenAI(api_key=openai_api_key, temperature=0.6)
+llm_open = OpenAI(api_key=os.environ['openai_api_key'], temperature=0.6)
 qa = RetrievalQA.from_chain_type(llm=llm_open, chain_type="stuff", retriever=vector_store.as_retriever(), return_source_documents=False)
  
 # Function to transcribe audio files from Azure Blob Storage and get bot response
@@ -106,6 +109,57 @@ def main():
        
         # Display bot's response
         st.write("Chatterbean:", bot_response)
+
+from azure.storage.blob import BlobServiceClient
+import csv
+import io
+
+
+container_name = "genai"
+file_name = "output_for_visualisation.csv"
+
+blob_service_client = BlobServiceClient.from_connection_string(os.environ['connection_string'])
+blob_client = blob_service_client.get_blob_client(container=container_name, blob=file_name)
+
+prompt_template = """Retrieve information about the ride involving the driver {} and the passenger {}, and fetch only these details in JSON format
+Driver_Name
+Passenger_name
+Overall_Rating (in number ranging from 1 to 5,5 being the highest)
+Overall_Feedback
+Comments
+Number_of_Rides (count it as Total number of reviews on the driver by all the passengers for the particular Driver into consideration,try to cross check wih the number of feedback documents for the particular driver in the entire database )  
+"""
+
+def append_to_csv(data):
+    if not blob_client.exists():
+        blob_client.upload_blob("", overwrite=True)
+
+    existing_data = blob_client.download_blob().content_as_text().strip()
+  
+    if existing_data:
+        new_data = existing_data + "\n" + data
+    else:
+        new_data = data
+
+    blob_client.upload_blob(new_data, overwrite=True)
+
+
+driver_name = "Maxwell"
+passenger_name = "Sophie"
+prompt = prompt_template.format(driver_name, passenger_name)
+response = qa.run(query=prompt)
+response_csv = response.strip() 
+
+response_csv_lines = response.strip().split("\n") 
+response_body = "\n".join(response_csv_lines[1:])  
+
+
+# append_to_csv(response_body.strip())
+
+# append_to_csv(response_csv)
+print(response_csv)
+print("Output appended to CSV file in Azure Blob Storage.")
+
  
 if __name__ == "__main__":
     main()
