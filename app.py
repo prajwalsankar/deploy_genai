@@ -83,7 +83,7 @@ vector_store: AzureSearch = AzureSearch(
 # qa = RetrievalQA.from_chain_type(llm=llm_open, chain_type="stuff", retriever=vector_store.as_retriever(), return_source_documents=False)
 
 from langchain_openai import AzureOpenAI,OpenAI
-from langchain.chat_models import AzureChatOpenAI
+from langchain_community.chat_models import AzureChatOpenAI
 # llm_azure = AzureOpenAI(api_key="e6c4aed862ff419a8708632cb8837760",temperature=0)
 os.environ["OPENAI_API_KEY"] = "e6c4aed862ff419a8708632cb8837760"
 os.environ["OPENAI_API_VERSION"] = "2023-12-01-preview"
