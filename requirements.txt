@@ -6,6 +6,8 @@ anyio==4.3.0
 attrs==23.2.0
 azure-core==1.30.1
 azure-storage-blob==12.20.0
+azure-search==1.0.0b1
+azure-search-documents==11.6.0b2
 blinker==1.8.2
 cachetools==5.3.3
 certifi==2024.2.2
@@ -42,7 +44,7 @@ marshmallow==3.21.2
 mdurl==0.1.2
 multidict==6.0.5
 mypy-extensions==1.0.0
-numpy==1.24.4
+numpy==1.26.4
 openai==1.30.1
 orjson==3.10.3
 packaging==23.2
