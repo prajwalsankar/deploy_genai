@@ -49,9 +49,9 @@ text_splitter = CharacterTextSplitter(chunk_size=256, chunk_overlap=20)
 # vector_store.add_documents(documents=docs)
 
 azure_endpoint: str = "https://ajuserv-open-ai.openai.azure.com/"
-azure_openai_api_key: str = "e6c4aed862ff419a8708632cb8837760"
+azure_openai_api_key: str = "05479b50c34245d8b4ba41c48c49838e"
 azure_openai_api_version: str = "2023-12-01-preview"
-azure_deployment_qa: str = "gpt-35-turbo-instruct-dev" #"text-embedding-ada-002"
+azure_deployment_qa: str = "gpt-35-turbo" #"text-embedding-ada-002"
 
  
  
@@ -84,8 +84,8 @@ vector_store: AzureSearch = AzureSearch(
 
 from langchain_openai import AzureOpenAI,OpenAI
 from langchain_community.chat_models import AzureChatOpenAI
-# llm_azure = AzureOpenAI(api_key="e6c4aed862ff419a8708632cb8837760",temperature=0)
-os.environ["OPENAI_API_KEY"] = "e6c4aed862ff419a8708632cb8837760"
+# llm_azure = AzureOpenAI(api_key="05479b50c34245d8b4ba41c48c49838e",temperature=0)
+os.environ["OPENAI_API_KEY"] = "05479b50c34245d8b4ba41c48c49838e"
 os.environ["OPENAI_API_VERSION"] = "2023-12-01-preview"
 os.environ["AZURE_OPENAI_ENDPOINT"] = "https://ajuserv-open-ai.openai.azure.com/"
 
